@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>宝咪饭饭计算器</title>
+  <style>
+    :root {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      color-scheme: light;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff5f7;
+      color: #3c1b29;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #ff4b6e;
+      letter-spacing: 1px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(255, 107, 129, 0.12);
+      border: 1px solid rgba(255, 183, 197, 0.6);
+    }
+    .flex {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      min-width: 160px;
+      flex: 1;
+    }
+    label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #b03a54;
+    }
+    input[type="number"],
+    select {
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #f5b7c6;
+      font-size: 14px;
+      outline: none;
+      min-height: 32px;
+      background: #fffafb;
+    }
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #ff6b81;
+      box-shadow: 0 0 0 1px rgba(255, 107, 129, 0.3);
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      background: #ff6b81;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.1s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+    button:hover {
+      background: #ff4b6e;
+      box-shadow: 0 3px 8px rgba(255, 107, 129, 0.4);
+      transform: translateY(-1px);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+    button.secondary {
+      background: #ffe0e8;
+      color: #b03a54;
+      border: 1px solid #ffc4d2;
+    }
+    button.secondary:hover {
+      background: #ffc4d2;
+    }
+    .small-btn {
+      margin-top: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 999px;
+      background: #ff9aa2;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .small-btn:hover {
+      background: #ff6b81;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid #ffe3ea;
+      padding: 6px 4px;
+      text-align: center;
+    }
+    th {
+      background: #fff0f3;
+      font-weight: 600;
+      color: #b03a54;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .summary-item {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .summary-item span.value {
+      font-weight: bold;
+      margin-left: 4px;
+      color: #ff3366;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+    .badge-ok {
+      background: #ffeef7;
+      color: #d12a6a;
+      border: 1px solid #ff9ac0;
+    }
+    .badge-high {
+      background: #ffe4e1;
+      color: #d35400;
+      border: 1px solid #ffb199;
+    }
+    .badge-low {
+      background: #fff6d5;
+      color: #e1b12c;
+      border: 1px solid #ffd76b;
+    }
+    .note {
+      font-size: 12px;
+      color: #8b4a5b;
+      line-height: 1.6;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+    .section-title h2 {
+      font-size: 18px;
+      color: #ff4b6e;
+    }
+    details {
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    details summary {
+      cursor: pointer;
+      color: #ff4b6e;
+      font-weight: 500;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary::before {
+      content: "▶ ";
+      font-size: 10px;
+    }
+    details[open] summary::before {
+      content: "▼ ";
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #fff0f5;
+      font-size: 11px;
+      margin-right: 4px;
+      color: #b03a54;
+      border: 1px solid #ffc4d2;
+    }
+    @media (max-width: 768px) {
+      .card {
+        padding: 12px 14px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>宝咪饭饭计算器</h1>
+
+  <!-- 1. 猫咪基础信息 -->
+  <div class="card">
+    <div class="section-title">
+      <h2>1. 猫咪基础信息 & 每日需求</h2>
+      <button id="calcNeedsBtn">计算每日需求</button>
+    </div>
+    <div class="flex">
+      <div class="field-group">
+        <label for="weight">体重（kg）</label>
+        <input type="number" id="weight" min="0.5" max="15" step="0.1" value="4">
+      </div>
+      <div class="field-group">
+        <label for="lifeStage">年龄/状态（含活动系数）</label>
+        <select id="lifeStage">
+          <option value="2.5">幼猫（生长中，约系数 2.5）</option>
+          <option value="1.2" selected>成猫：已绝育 & 室内（系数 1.2）</option>
+          <option value="1.4">成猫：未绝育/较活跃（系数 1.4）</option>
+          <option value="0.8">老年/减肥中（系数 0.8）</option>
+        </select>
+      </div>
+    </div>
+    <div id="needsSummary">
+      <div class="summary-item">
+        估算基础代谢 RER（静息能量需求）：
+        <span class="value" id="rerValue">-</span> kcal/天
+      </div>
+      <div class="summary-item">
+        估算每日总能量 DER（考虑活动/年龄）：
+        <span class="value" id="derValue">-</span> kcal/天
+      </div>
+      <div class="summary-item">
+        推荐每日最少蛋白质：
+        <span class="value" id="proteinNeed">-</span> g/天
+        <span class="note">（简化按 ≥ 5 g 蛋白质 / kg 体重）</span>
+      </div>
+    </div>
+    <details>
+      <summary>展开查看：按 AAFCO 幼猫（生长&繁殖）换算的该猫每日关键微量元素需求</summary>
+      <div id="catDailyMicro"></div>
+    </details>
+    <p class="note">
+      • RER ≈ 70 × 体重<sup>0.75</sup>；DER = RER × 活动系数。<br>
+      • 维生素和微量元素部分按 AAFCO 幼猫/生长&繁殖标准，将“每 kg 干物质”近似换算为“每 1000 kcal 所需量”。<br>
+      • 本工具仅做自制猫饭配方参考，不能替代专业宠物营养师或兽医建议。
+    </p>
+  </div>
+
+  <!-- 2. 食材输入 & 按比例自动生成 -->
+  <div class="card">
+    <div class="section-title">
+      <h2>2. 食材输入（肉类 + 海产 + 鸡蛋黄 + 蔬菜/碳水）</h2>
+      <div class="flex" style="gap:8px;">
+        <button id="addIngredientBtn" class="secondary">添加一种食材</button>
+        <button id="addCustomIngredientBtn" class="secondary">添加自定义食材</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+      <tr>
+        <th>食材</th>
+        <th>重量（g）</th>
+        <th>本行能量（kcal）</th>
+        <th>本行蛋白质（g）</th>
+        <th>本行脂肪（g）</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody id="ingredientsBody"></tbody>
+    </table>
+
+    <details>
+      <summary>按推荐肉类比例表自动生成（白40 / 红22 / 肌16 / 鱼7 / 其他内脏7 / 肝5 / 贝3）</summary>
+      <p class="note">
+        使用方法：<br>
+        1）为每个类别选择具体食材（可多选，例如白肉选择鸡大胸 + 兔里脊，也可通过“添加自定义食材到该类别”加入新肉类）；<br>
+        2）选择一个“锚定类别”并输入该类别的实际重量（如：白肉 = 500 g）；<br>
+        3）点击“按比例生成肉类行”，程序会：<br>
+        &nbsp;&nbsp;• 根据比例推算总肉量；<br>
+        &nbsp;&nbsp;• 计算每个大类应有的总重量；<br>
+        &nbsp;&nbsp;• 在该大类中，先均分到各食材。之后你可以**手动调整某一行重量，自动把剩余的按平均分配给同一大类的其他行**，总量保持不变。<br>
+        注意：这里的比例只应用于“肉类大类”，蔬菜/碳水不参与这个比例。
+      </p>
+      <div class="flex">
+        <div class="field-group">
+          <label for="anchorCategory">锚定类别</label>
+          <select id="anchorCategory">
+            <option value="">请选择</option>
+            <option value="white">白肉（鸡/鸭/鹅/兔/鸵鸟/火鸡/鹌鹑）40%</option>
+            <option value="red">红肉（牛/羊/鹿/猪）22%</option>
+            <option value="muscle">肌肉组织（心/舌/胃/肠/肚/肺/食管）16%</option>
+            <option value="fish">鱼类（三文鱼等）7%</option>
+            <option value="otherOrgan">其他内脏（胰腺/脾/脑/肾/睾丸）7%</option>
+            <option value="liver">肝脏 5%</option>
+            <option value="shellfish">贝类（蓝口贝等）3%</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="anchorWeight">该类别实际重量（g）</label>
+          <input type="number" id="anchorWeight" min="1" step="1">
+        </div>
+      </div>
+      <div class="flex">
+        <div class="field-group">
+          <label for="autoWhite">白肉用哪些食材？（可多选）</label>
+          <select id="autoWhite" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="white">添加白肉自定义食材</button>
+        </div>
+        <div class="field-group">
+          <label for="autoRed">红肉用哪些食材？（可多选）</label>
+          <select id="autoRed" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="red">添加红肉自定义食材</button>
+        </div>
+        <div class="field-group">
+          <label for="autoMuscle">肌肉组织（心/舌/胃/肠/肚/肺/食管）用哪些食材？（可多选）</label>
+          <select id="autoMuscle" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="muscle">添加肌肉组织自定义食材</button>
+        </div>
+      </div>
+      <div class="flex">
+        <div class="field-group">
+          <label for="autoFish">鱼类用哪些食材？（可多选）</label>
+          <select id="autoFish" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="fish">添加鱼类自定义食材</button>
+        </div>
+        <div class="field-group">
+          <label for="autoOtherOrgan">其他内脏（胰腺/脾/脑/肾/睾丸）用哪些食材？（可多选）</label>
+          <select id="autoOtherOrgan" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="otherOrgan">添加其他内脏自定义食材</button>
+        </div>
+        <div class="field-group">
+          <label for="autoLiver">肝脏用哪些食材？（可多选）</label>
+          <select id="autoLiver" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="liver">添加肝脏自定义食材</button>
+        </div>
+        <div class="field-group">
+          <label for="autoShellfish">贝类用哪些食材？（可多选）</label>
+          <select id="autoShellfish" multiple size="4"></select>
+          <button type="button" class="small-btn" data-group="shellfish">添加贝类自定义食材</button>
+        </div>
+      </div>
+      <button id="autoFillMeatBtn">按比例生成肉类行</button>
+    </details>
+
+    <details>
+      <summary>关于食材营养数据库 & 自定义食材</summary>
+      <p class="note">
+        • 预置食材包括：你列出的鸡/鸭/牛/猪/兔/贝类/三文鱼中段（去皮），以及鸡蛋黄、虾、南瓜、西兰花、胡萝卜。<br>
+        • 可通过“添加自定义食材”或“添加某类别自定义食材”加入新的食材，需手动输入每 100 g 的能量/蛋白/脂肪；微量元素默认 0，可在代码中细调。<br>
+        • 植物来源胡萝卜/南瓜等的 β-胡萝卜素，本工具不计入维生素 A（猫对植物维 A 转换效率低），避免虚假安全感。
+      </p>
+    </details>
+  </div>
+
+  <!-- 3. 当前配方总体营养 -->
+  <div class="card">
+    <div class="section-title">
+      <h2>3. 当前配方营养统计（按你输入的总量）</h2>
+    </div>
+    <div id="totalSummary">
+      <div class="summary-item">
+        本次配方总重量（含肉 + 蔬菜）：
+        <span class="value" id="totalWeight">0</span> g
+      </div>
+      <div class="summary-item">
+        总能量：
+        <span class="value" id="totalKcal">0</span> kcal
+      </div>
+      <div class="summary-item">
+        总蛋白质：
+        <span class="value" id="totalProtein">0</span> g
+      </div>
+      <div class="summary-item">
+        总脂肪：
+        <span class="value" id="totalFat">0</span> g
+      </div>
+      <hr>
+      <div class="summary-item">
+        推荐喂养方案：
+        <span class="value" id="feedingPlanText">（请先计算 DER 并输入配方）</span>
+      </div>
+      <div class="summary-item">
+        蛋白质充足度参考：
+        <span class="value" id="proteinCompareText">-</span>
+        <span id="proteinBadge" class="badge"></span>
+      </div>
+    </div>
+    <p class="note">
+      • 默认假设当前配方是“总备餐量”（例如一次做一大批），推荐喂养方案会估算这批饭可分成多少份、每份多少克、每天喂几份、总共可吃几天。<br>
+      • 幼猫默认推荐 4 份/天；较活跃成猫 3 份/天；普通成猫或老年猫 2 份/天。
+    </p>
+  </div>
+
+  <!-- 4. 1kg 储备配方 & AAFCO 缺口 & 补剂 -->
+  <div class="card">
+    <div class="section-title">
+      <h2>4. 按 AAFCO 幼猫标准生成 1 kg 猫饭 & 营养缺口 & 补剂</h2>
+      <button id="calc1kgBtn">计算 1 kg 配方 & 缺口</button>
+    </div>
+    <div class="summary-item">
+      1 kg 储备配方（按当前比例放大）总能量：
+      <span class="value" id="batch1kgKcal">-</span> kcal
+    </div>
+    <div class="summary-item">
+      1 kg 储备配方蛋白质：
+      <span class="value" id="batch1kgProtein">-</span> g
+      <span class="pill">AAFCO 幼猫最低：<span id="batch1kgProteinNeed">-</span> g</span>
+    </div>
+    <div class="summary-item">
+      1 kg 储备配方脂肪：
+      <span class="value" id="batch1kgFat">-</span> g
+      <span class="pill">AAFCO 幼猫最低：<span id="batch1kgFatNeed">-</span> g</span>
+    </div>
+
+    <h3 style="margin-top:10px;">4.1 1 kg 中各食材目标用量（按当前比例缩放）</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>食材</th>
+        <th>原始输入（g）</th>
+        <th>1 kg 配方中用量（g）</th>
+      </tr>
+      </thead>
+      <tbody id="batch1kgIngredients"></tbody>
+    </table>
+
+    <h3 style="margin-top:10px;">4.2 1 kg 配方相对于 AAFCO 幼猫标准的关键营养缺口</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>营养素</th>
+        <th>1 kg 实际含量</th>
+        <th>AAFCO 幼猫最低</th>
+        <th>AAFCO 或其他上限（如有）</th>
+        <th>差值（负值 = 缺口）</th>
+      </tr>
+      </thead>
+      <tbody id="aafcoDeficits"></tbody>
+    </table>
+
+    <h3 style="margin-top:10px;">4.3 根据 1 kg 配方的“肉类总量”估算营养补剂用量</h3>
+    <div id="supplementsSummary" class="note"></div>
+
+    <p class="note">
+      • AAFCO 表为干物质基础，这里将其粗略换算为“每 1000 kcal 所需量”，再乘以 1 kg 猫饭的总能量。<br>
+      • 差值列中若出现 ⚠️，表示该营养素明显低于最低值或超过推荐上限，建议通过补剂或配方调整。<br>
+      • 补剂用量全部按“肉类总重量”换算，蔬菜部分不计入肉量。
+    </p>
+  </div>
+</div>
+
+<script>
+  // ===== 工具函数 =====
+  function formatNumber(n, digits = 1) {
+    if (isNaN(n)) return '-';
+    return Number(n.toFixed(digits));
+  }
+
+  function setBadge(badgeEl, status) {
+    badgeEl.className = 'badge';
+    if (status === 'ok') {
+      badgeEl.classList.add('badge-ok');
+      badgeEl.textContent = '大致合适';
+    } else if (status === 'high') {
+      badgeEl.classList.add('badge-high');
+      badgeEl.textContent = '偏高';
+    } else if (status === 'low') {
+      badgeEl.classList.add('badge-low');
+      badgeEl.textContent = '偏低';
+    } else {
+      badgeEl.textContent = '';
+    }
+  }
+
+  // ===== AAFCO 幼猫/生长&繁殖（每 1000 kcal）简化标准 =====
+  // 从 AAFCO Growth & Reproduction 表按 3.5 kcal/g DM 粗略换算
+  const AAFCO_KITTEN_PER_1000KCAL_MIN = {
+    protein_g: 85.7,   // 30% DM
+    fat_g: 25.7,       // 9% DM
+    taurine_mg: 285.7, // 0.1% DM ≈ 1000 mg/kg
+    calcium_mg: 2857.1,
+    phosphorus_mg: 2285.7,
+    potassium_mg: 1714.3,
+    sodium_mg: 571.4,
+    chloride_mg: 857.1,
+    magnesium_mg: 228.6,
+    iron_mg: 22.9,
+    copper_mg: 4.3,
+    manganese_mg: 2.1,
+    zinc_mg: 21.4,
+    iodine_mg: 0.10,
+    selenium_mg: 0.0286,
+    vitA_IU: 2571.4,
+    vitE_IU: 8.6,
+    vitB_mg: 22.5 // 各种 B 族维生素总和的大致量
+  };
+
+  // AAFCO 对部分营养素给出了最大值（这里同样换算为每 1000 kcal）
+  const AAFCO_KITTEN_PER_1000KCAL_MAX = {
+    // 锌：2000 mg/kg DM
+    zinc_mg: 571.4,
+    // 维生素 A：750000 IU/kg DM
+    vitA_IU: 214285.7
+    // 维生素 D 也有上限，但本工具未逐项统计 vitD 含量，因此不在此提示
+  };
+
+  const NUTRIENT_META = {
+    protein_g:   { label: '蛋白质', unit: 'g' },
+    fat_g:       { label: '脂肪', unit: 'g' },
+    taurine_mg:  { label: '牛磺酸', unit: 'mg' },
+    calcium_mg:  { label: '钙', unit: 'mg' },
+    phosphorus_mg: { label: '磷', unit: 'mg' },
+    magnesium_mg:  { label: '镁', unit: 'mg' },
+    potassium_mg:  { label: '钾', unit: 'mg' },
+    sodium_mg:     { label: '钠', unit: 'mg' },
+    chloride_mg:   { label: '氯', unit: 'mg' },
+    iron_mg:    { label: '铁', unit: 'mg' },
+    copper_mg:  { label: '铜', unit: 'mg' },
+    manganese_mg:{ label: '锰', unit: 'mg' },
+    zinc_mg:    { label: '锌', unit: 'mg' },
+    selenium_mg:{ label: '硒', unit: 'mg' },
+    iodine_mg:  { label: '碘', unit: 'mg' },
+    vitA_IU:    { label: '维生素A', unit: 'IU' },
+    vitE_IU:    { label: '维生素E', unit: 'IU' },
+    vitB_mg:    { label: '维生素B（合计）', unit: 'mg' }
+  };
+
+  const MICRO_KEYS = [
+    'taurine_mg',
+    'calcium_mg','phosphorus_mg','magnesium_mg',
+    'potassium_mg','sodium_mg','chloride_mg',
+    'iron_mg','copper_mg','manganese_mg','zinc_mg',
+    'selenium_mg','iodine_mg',
+    'vitA_IU','vitB_mg','vitE_IU'
+  ];
+
+  // ===== 食材基础 profile（每 100 g） =====
+  const BASE_PROFILES = {
+    poultry_breast: {
+      kcal: 120, protein: 23, fat: 2,
+      taurine_mg: 15,
+      calcium_mg: 5, phosphorus_mg: 210, magnesium_mg: 25,
+      potassium_mg: 330, sodium_mg: 60, chloride_mg: 0,
+      iron_mg: 0.6, copper_mg: 0.05, manganese_mg: 0.02,
+      zinc_mg: 1.0, selenium_mg: 0.025, iodine_mg: 0.002,
+      vitA_IU: 20, vitB_mg: 1, vitE_IU: 0.5
+    },
+    poultry_dark: {
+      kcal: 160, protein: 20, fat: 9,
+      taurine_mg: 80,
+      calcium_mg: 6, phosphorus_mg: 200, magnesium_mg: 23,
+      potassium_mg: 300, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 1.5, copper_mg: 0.06, manganese_mg: 0.02,
+      zinc_mg: 1.5, selenium_mg: 0.03, iodine_mg: 0.002,
+      vitA_IU: 40, vitB_mg: 1.2, vitE_IU: 0.7
+    },
+    poultry_skin: {
+      kcal: 450, protein: 11, fat: 40,
+      taurine_mg: 10,
+      calcium_mg: 15, phosphorus_mg: 80, magnesium_mg: 5,
+      potassium_mg: 90, sodium_mg: 80, chloride_mg: 0,
+      iron_mg: 0.5, copper_mg: 0.03, manganese_mg: 0.01,
+      zinc_mg: 0.8, selenium_mg: 0.01, iodine_mg: 0.001,
+      vitA_IU: 50, vitB_mg: 0.5, vitE_IU: 1
+    },
+    heart: {
+      kcal: 150, protein: 17, fat: 10,
+      taurine_mg: 200,
+      calcium_mg: 10, phosphorus_mg: 200, magnesium_mg: 23,
+      potassium_mg: 250, sodium_mg: 90, chloride_mg: 0,
+      iron_mg: 6, copper_mg: 0.4, manganese_mg: 0.04,
+      zinc_mg: 3, selenium_mg: 0.03, iodine_mg: 0.002,
+      vitA_IU: 100, vitB_mg: 2, vitE_IU: 1
+    },
+    liver: {
+      kcal: 140, protein: 20, fat: 5,
+      taurine_mg: 100,
+      calcium_mg: 12, phosphorus_mg: 350, magnesium_mg: 25,
+      potassium_mg: 300, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 10, copper_mg: 12, manganese_mg: 0.3,
+      zinc_mg: 4, selenium_mg: 0.04, iodine_mg: 0.002,
+      vitA_IU: 15000, vitB_mg: 5, vitE_IU: 2
+    },
+    gizzard: {
+      kcal: 110, protein: 18, fat: 2,
+      taurine_mg: 80,
+      calcium_mg: 12, phosphorus_mg: 230, magnesium_mg: 22,
+      potassium_mg: 270, sodium_mg: 80, chloride_mg: 0,
+      iron_mg: 4, copper_mg: 0.2, manganese_mg: 0.04,
+      zinc_mg: 3, selenium_mg: 0.03, iodine_mg: 0.002,
+      vitA_IU: 50, vitB_mg: 1.5, vitE_IU: 1
+    },
+    red_muscle_lean: {
+      kcal: 180, protein: 21, fat: 11,
+      taurine_mg: 40,
+      calcium_mg: 10, phosphorus_mg: 200, magnesium_mg: 20,
+      potassium_mg: 300, sodium_mg: 65, chloride_mg: 0,
+      iron_mg: 2.5, copper_mg: 0.1, manganese_mg: 0.02,
+      zinc_mg: 4, selenium_mg: 0.02, iodine_mg: 0.002,
+      vitA_IU: 30, vitB_mg: 2, vitE_IU: 0.5
+    },
+    red_muscle_fatty: {
+      kcal: 230, protein: 18, fat: 17,
+      taurine_mg: 40,
+      calcium_mg: 9, phosphorus_mg: 190, magnesium_mg: 18,
+      potassium_mg: 280, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 2.3, copper_mg: 0.09, manganese_mg: 0.02,
+      zinc_mg: 3.5, selenium_mg: 0.02, iodine_mg: 0.002,
+      vitA_IU: 30, vitB_mg: 2, vitE_IU: 0.5
+    },
+    beef_liver: {
+      kcal: 140, protein: 20, fat: 5,
+      taurine_mg: 80,
+      calcium_mg: 12, phosphorus_mg: 350, magnesium_mg: 25,
+      potassium_mg: 300, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 6, copper_mg: 10, manganese_mg: 0.3,
+      zinc_mg: 4, selenium_mg: 0.04, iodine_mg: 0.002,
+      vitA_IU: 16000, vitB_mg: 5, vitE_IU: 2
+    },
+    pork_liver: {
+      kcal: 140, protein: 21, fat: 4,
+      taurine_mg: 70,
+      calcium_mg: 12, phosphorus_mg: 340, magnesium_mg: 24,
+      potassium_mg: 290, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 15, copper_mg: 5, manganese_mg: 0.3,
+      zinc_mg: 3.5, selenium_mg: 0.04, iodine_mg: 0.002,
+      vitA_IU: 14000, vitB_mg: 5, vitE_IU: 2
+    },
+    rabbit_liver: {
+      kcal: 140, protein: 21, fat: 4,
+      taurine_mg: 70,
+      calcium_mg: 12, phosphorus_mg: 340, magnesium_mg: 24,
+      potassium_mg: 290, sodium_mg: 70, chloride_mg: 0,
+      iron_mg: 10, copper_mg: 6, manganese_mg: 0.3,
+      zinc_mg: 3.5, selenium_mg: 0.04, iodine_mg: 0.002,
+      vitA_IU: 14000, vitB_mg: 5, vitE_IU: 2
+    },
+    rabbit_kidney: {
+      kcal: 120, protein: 20, fat: 4,
+      taurine_mg: 80,
+      calcium_mg: 12, phosphorus_mg: 240, magnesium_mg: 20,
+      potassium_mg: 280, sodium_mg: 80, chloride_mg: 0,
+      iron_mg: 4, copper_mg: 0.3, manganese_mg: 0.05,
+      zinc_mg: 3, selenium_mg: 0.03, iodine_mg: 0.002,
+      vitA_IU: 200, vitB_mg: 3, vitE_IU: 1
+    },
+    mussel: {
+      kcal: 90, protein: 16, fat: 2,
+      taurine_mg: 550,
+      calcium_mg: 35, phosphorus_mg: 200, magnesium_mg: 40,
+      potassium_mg: 480, sodium_mg: 280, chloride_mg: 0,
+      iron_mg: 4, copper_mg: 0.3, manganese_mg: 3.4,
+      zinc_mg: 1.6, selenium_mg: 0.06, iodine_mg: 0.01,
+      vitA_IU: 300, vitB_mg: 3, vitE_IU: 1
+    },
+    oyster: {
+      kcal: 80, protein: 9, fat: 2,
+      taurine_mg: 380,
+      calcium_mg: 80, phosphorus_mg: 130, magnesium_mg: 40,
+      potassium_mg: 220, sodium_mg: 260, chloride_mg: 0,
+      iron_mg: 6, copper_mg: 2, manganese_mg: 0.5,
+      zinc_mg: 60, selenium_mg: 0.06, iodine_mg: 0.02,
+      vitA_IU: 250, vitB_mg: 3, vitE_IU: 1.5
+    },
+    clam: {
+      kcal: 80, protein: 14, fat: 1,
+      taurine_mg: 520,
+      calcium_mg: 90, phosphorus_mg: 200, magnesium_mg: 40,
+      potassium_mg: 250, sodium_mg: 280, chloride_mg: 0,
+      iron_mg: 13, copper_mg: 0.8, manganese_mg: 0.5,
+      zinc_mg: 2, selenium_mg: 0.06, iodine_mg: 0.02,
+      vitA_IU: 200, vitB_mg: 3, vitE_IU: 1
+    },
+    salmon: {
+      kcal: 200, protein: 20, fat: 13,
+      taurine_mg: 90,
+      calcium_mg: 10, phosphorus_mg: 220, magnesium_mg: 30,
+      potassium_mg: 360, sodium_mg: 60, chloride_mg: 0,
+      iron_mg: 0.8, copper_mg: 0.05, manganese_mg: 0.02,
+      zinc_mg: 0.7, selenium_mg: 0.04, iodine_mg: 0.02,
+      vitA_IU: 400, vitB_mg: 3, vitE_IU: 2
+    },
+    egg_yolk: {
+      kcal: 320, protein: 16, fat: 27,
+      taurine_mg: 20,
+      calcium_mg: 140, phosphorus_mg: 500, magnesium_mg: 10,
+      potassium_mg: 100, sodium_mg: 40, chloride_mg: 0,
+      iron_mg: 2.7, copper_mg: 0.1, manganese_mg: 0.04,
+      zinc_mg: 3, selenium_mg: 0.03, iodine_mg: 0.02,
+      vitA_IU: 550, vitB_mg: 2, vitE_IU: 3
+    },
+    shrimp: {
+      kcal: 100, protein: 24, fat: 0.3,
+      taurine_mg: 200,
+      calcium_mg: 70, phosphorus_mg: 200, magnesium_mg: 40,
+      potassium_mg: 260, sodium_mg: 150, chloride_mg: 0,
+      iron_mg: 1.8, copper_mg: 0.2, manganese_mg: 0.03,
+      zinc_mg: 1.3, selenium_mg: 0.04, iodine_mg: 0.03,
+      vitA_IU: 80, vitB_mg: 2, vitE_IU: 1
+    },
+    pumpkin: {
+      kcal: 26, protein: 1, fat: 0.1,
+      taurine_mg: 0,
+      calcium_mg: 20, phosphorus_mg: 44, magnesium_mg: 12,
+      potassium_mg: 340, sodium_mg: 1, chloride_mg: 0,
+      iron_mg: 0.8, copper_mg: 0.1, manganese_mg: 0.1,
+      zinc_mg: 0.3, selenium_mg: 0.001, iodine_mg: 0.0,
+      vitA_IU: 0, vitB_mg: 0.5, vitE_IU: 0.4
+    },
+    broccoli: {
+      kcal: 35, protein: 2.8, fat: 0.4,
+      taurine_mg: 0,
+      calcium_mg: 47, phosphorus_mg: 66, magnesium_mg: 21,
+      potassium_mg: 316, sodium_mg: 33, chloride_mg: 0,
+      iron_mg: 0.7, copper_mg: 0.04, manganese_mg: 0.2,
+      zinc_mg: 0.4, selenium_mg: 0.002, iodine_mg: 0.0,
+      vitA_IU: 0, vitB_mg: 0.8, vitE_IU: 1
+    },
+    carrot: {
+      kcal: 41, protein: 0.9, fat: 0.2,
+      taurine_mg: 0,
+      calcium_mg: 33, phosphorus_mg: 35, magnesium_mg: 12,
+      potassium_mg: 320, sodium_mg: 69, chloride_mg: 0,
+      iron_mg: 0.3, copper_mg: 0.05, manganese_mg: 0.1,
+      zinc_mg: 0.3, selenium_mg: 0.001, iodine_mg: 0.0,
+      vitA_IU: 0, vitB_mg: 0.7, vitE_IU: 0.7
+    }
+  };
+
+  // ===== 食材库：具体名字 -> profile + 分组 + 是否算肉 =====
+  const INGREDIENTS_DB = {
+    // 鸡
+    "鸡大胸": { ...BASE_PROFILES.poultry_breast, group: 'white', isMeat: true },
+    "鸡小胸": { ...BASE_PROFILES.poultry_breast, group: 'white', isMeat: true },
+    "鸡琵琶腿（去骨去皮）": { ...BASE_PROFILES.poultry_dark, group: 'white', isMeat: true },
+    "鸡琵琶腿（去骨不去皮）": { ...BASE_PROFILES.poultry_dark, group: 'white', isMeat: true },
+    "鸡皮": { ...BASE_PROFILES.poultry_skin, group: 'extra', isMeat: true }, // 不纳入“其他内脏”比例
+    "鸡心": { ...BASE_PROFILES.heart, group: 'muscle', isMeat: true },
+    "鸡肝": { ...BASE_PROFILES.liver, group: 'liver', isMeat: true },
+    "鸡胗": { ...BASE_PROFILES.gizzard, group: 'muscle', isMeat: true },
+
+    // 鸭
+    "鸭大胸": { ...BASE_PROFILES.poultry_dark, group: 'white', isMeat: true },
+    "鸭小胸": { ...BASE_PROFILES.poultry_dark, group: 'white', isMeat: true },
+    "鸭心": { ...BASE_PROFILES.heart, group: 'muscle', isMeat: true },
+    "鸭肝": { ...BASE_PROFILES.liver, group: 'liver', isMeat: true },
+    "鸭胗": { ...BASE_PROFILES.gizzard, group: 'muscle', isMeat: true },
+
+    // 牛
+    "牛胸肉": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "牛腿肉": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "牛肋条": { ...BASE_PROFILES.red_muscle_fatty, group: 'red', isMeat: true },
+    "牛上脑": { ...BASE_PROFILES.red_muscle_fatty, group: 'red', isMeat: true },
+    "牛霖": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "小米龙": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "牛心": { ...BASE_PROFILES.heart, group: 'muscle', isMeat: true },
+    "牛肝": { ...BASE_PROFILES.beef_liver, group: 'liver', isMeat: true },
+
+    // 猪
+    "猪里脊": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "猪前腿肉（精肉）": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "猪后腿肉（精肉）": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "猪梅花": { ...BASE_PROFILES.red_muscle_fatty, group: 'red', isMeat: true },
+    "猪肝": { ...BASE_PROFILES.pork_liver, group: 'liver', isMeat: true },
+
+    // 兔
+    "兔里脊": { ...BASE_PROFILES.poultry_breast, group: 'white', isMeat: true },
+    "兔腿": { ...BASE_PROFILES.red_muscle_lean, group: 'red', isMeat: true },
+    "兔肾": { ...BASE_PROFILES.rabbit_kidney, group: 'otherOrgan', isMeat: true },
+    "兔肝": { ...BASE_PROFILES.rabbit_liver, group: 'liver', isMeat: true },
+
+    // 贝类 & 海产
+    "蓝口贝": { ...BASE_PROFILES.mussel, group: 'shellfish', isMeat: true },
+    "海虹": { ...BASE_PROFILES.mussel, group: 'shellfish', isMeat: true },
+    "青口贝": { ...BASE_PROFILES.mussel, group: 'shellfish', isMeat: true },
+    "生蚝": { ...BASE_PROFILES.oyster, group: 'shellfish', isMeat: true },
+    "蛤蜊": { ...BASE_PROFILES.clam, group: 'shellfish', isMeat: true },
+    "三文鱼中段（去皮）": { ...BASE_PROFILES.salmon, group: 'fish', isMeat: true },
+
+    // 鸡蛋黄、虾
+    "鸡蛋黄": { ...BASE_PROFILES.egg_yolk, group: 'extra', isMeat: true }, // 不纳入“其他内脏”比例
+    "虾": { ...BASE_PROFILES.shrimp, group: 'fish', isMeat: true },
+
+    // 蔬菜/碳水
+    "南瓜": { ...BASE_PROFILES.pumpkin, group: 'veg', isMeat: false },
+    "西兰花": { ...BASE_PROFILES.broccoli, group: 'veg', isMeat: false },
+    "胡萝卜": { ...BASE_PROFILES.carrot, group: 'veg', isMeat: false }
+  };
+
+  // 肉类比例（肉类总量内部比例）
+  const MEAT_RATIOS = {
+    white: 0.40,
+    red: 0.22,
+    muscle: 0.16,
+    fish: 0.07,
+    otherOrgan: 0.07,
+    liver: 0.05,
+    shellfish: 0.03
+  };
+
+  let INGREDIENT_NAMES = Object.keys(INGREDIENTS_DB);
+
+  const groupSelectIds = {
+    white: 'autoWhite',
+    red: 'autoRed',
+    muscle: 'autoMuscle',
+    fish: 'autoFish',
+    otherOrgan: 'autoOtherOrgan',
+    liver: 'autoLiver',
+    shellfish: 'autoShellfish'
+  };
+
+  // ===== DOM 引用 =====
+  const weightInput = document.getElementById('weight');
+  const lifeStageSelect = document.getElementById('lifeStage');
+  const rerValueSpan = document.getElementById('rerValue');
+  const derValueSpan = document.getElementById('derValue');
+  const proteinNeedSpan = document.getElementById('proteinNeed');
+  const catDailyMicroDiv = document.getElementById('catDailyMicro');
+
+  const ingredientsBody = document.getElementById('ingredientsBody');
+  const totalWeightSpan = document.getElementById('totalWeight');
+  const totalKcalSpan = document.getElementById('totalKcal');
+  const totalProteinSpan = document.getElementById('totalProtein');
+  const totalFatSpan = document.getElementById('totalFat');
+
+  const feedingPlanText = document.getElementById('feedingPlanText');
+  const proteinCompareText = document.getElementById('proteinCompareText');
+  const proteinBadge = document.getElementById('proteinBadge');
+
+  const batch1kgKcalSpan = document.getElementById('batch1kgKcal');
+  const batch1kgProteinSpan = document.getElementById('batch1kgProtein');
+  const batch1kgFatSpan = document.getElementById('batch1kgFat');
+  const batch1kgProteinNeedSpan = document.getElementById('batch1kgProteinNeed');
+  const batch1kgFatNeedSpan = document.getElementById('batch1kgFatNeed');
+  const batch1kgIngredientsBody = document.getElementById('batch1kgIngredients');
+  const aafcoDeficitsBody = document.getElementById('aafcoDeficits');
+  const supplementsSummaryDiv = document.getElementById('supplementsSummary');
+
+  const anchorCategorySelect = document.getElementById('anchorCategory');
+  const anchorWeightInput = document.getElementById('anchorWeight');
+
+  let currentDER = 0;
+  let currentProteinNeed = 0;
+
+  // ===== 猫咪每日需求 =====
+  function calcNeeds() {
+    const weight = parseFloat(weightInput.value);
+    const factor = parseFloat(lifeStageSelect.value);
+    if (!weight || weight <= 0) {
+      alert('请先正确填写猫咪体重（kg）。');
+      return;
+    }
+    const RER = 70 * Math.pow(weight, 0.75);
+    const DER = RER * factor;
+    const proteinNeed = weight * 5;
+
+    currentDER = DER;
+    currentProteinNeed = proteinNeed;
+
+    rerValueSpan.textContent = formatNumber(RER, 1);
+    derValueSpan.textContent = formatNumber(DER, 1);
+    proteinNeedSpan.textContent = formatNumber(proteinNeed, 1);
+
+    renderCatDailyMicro(DER);
+    updateTotals();
+  }
+
+  document.getElementById('calcNeedsBtn').addEventListener('click', calcNeeds);
+
+  function renderCatDailyMicro(derKcal) {
+    if (!derKcal) {
+      catDailyMicroDiv.innerHTML = '<p class="note">请先在上方输入体重并点击“计算每日需求”。</p>';
+      return;
+    }
+    const multiplier = derKcal / 1000.0;
+    const keysToShow = [
+      'taurine_mg','calcium_mg','phosphorus_mg','magnesium_mg',
+      'potassium_mg','sodium_mg','chloride_mg',
+      'iron_mg','zinc_mg','manganese_mg','selenium_mg','iodine_mg',
+      'vitA_IU','vitE_IU','vitB_mg'
+    ];
+    const rows = keysToShow.map(key => {
+      const base = AAFCO_KITTEN_PER_1000KCAL_MIN[key];
+      if (base == null) return '';
+      const require = base * multiplier;
+      const meta = NUTRIENT_META[key];
+      const isMg = key.includes('_mg');
+      const isIU = key.includes('_IU');
+      const decimals = isMg ? 1 : (isIU ? 0 : 2);
+      return `<tr>
+        <td>${meta.label}</td>
+        <td>${formatNumber(require, decimals)} ${meta.unit}</td>
+      </tr>`;
+    }).join('');
+    catDailyMicroDiv.innerHTML =
+      '<table><thead><tr><th>营养素</th><th>该猫每日最低需求（按 AAFCO 幼猫/生长&繁殖）</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>';
+  }
+
+  // ===== 填充多选类别下拉 =====
+  function populateGroupSelects() {
+    const grouped = {
+      white: [], red: [], muscle: [], fish: [],
+      otherOrgan: [], liver: [], shellfish: []
+    };
+    INGREDIENT_NAMES.forEach(name => {
+      const g = INGREDIENTS_DB[name].group;
+      if (grouped[g]) grouped[g].push(name);
+    });
+    Object.keys(groupSelectIds).forEach(group => {
+      const sel = document.getElementById(groupSelectIds[group]);
+      if (!sel) return;
+      const previousSelected = Array.from(sel.selectedOptions).map(o => o.value);
+      sel.innerHTML = '';
+      grouped[group].forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        if (previousSelected.includes(name)) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  // ===== 食材行 =====
+  function createIngredientRow(defaultName = "", defaultWeight = "", groupKey = null, groupTotal = null) {
+    const tr = document.createElement('tr');
+
+    if (groupKey && groupTotal) {
+      tr.dataset.autoGroup = '1';
+      tr.dataset.groupKey = groupKey;
+      tr.dataset.groupTotal = String(groupTotal);
+    }
+
+    const tdName = document.createElement('td');
+    const select = document.createElement('select');
+    select.className = 'ingredient-select';
+
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    emptyOpt.textContent = '选择食材';
+    select.appendChild(emptyOpt);
+
+    INGREDIENT_NAMES.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+    if (defaultName && INGREDIENTS_DB[defaultName]) {
+      select.value = defaultName;
+    }
+    tdName.appendChild(select);
+
+    const tdWeight = document.createElement('td');
+    const weightInput = document.createElement('input');
+    weightInput.type = 'number';
+    weightInput.min = '0';
+    weightInput.step = '1';
+    weightInput.value = defaultWeight || '';
+    weightInput.className = 'ingredient-amount';
+    tdWeight.appendChild(weightInput);
+    tdWeight.insertAdjacentText('beforeend', ' g');
+
+    const tdKcal = document.createElement('td');
+    tdKcal.className = 'ingredient-kcal';
+    tdKcal.textContent = '0';
+
+    const tdProtein = document.createElement('td');
+    tdProtein.className = 'ingredient-protein';
+    tdProtein.textContent = '0';
+
+    const tdFat = document.createElement('td');
+    tdFat.className = 'ingredient-fat';
+    tdFat.textContent = '0';
+
+    const tdAction = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '删除';
+    delBtn.className = 'secondary';
+    delBtn.addEventListener('click', () => {
+      tr.remove();
+      updateTotals();
+    });
+    tdAction.appendChild(delBtn);
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdWeight);
+    tr.appendChild(tdKcal);
+    tr.appendChild(tdProtein);
+    tr.appendChild(tdFat);
+    tr.appendChild(tdAction);
+
+    select.addEventListener('change', () => {
+      updateRowValues(tr);
+      updateTotals();
+    });
+    weightInput.addEventListener('input', () => handleWeightChange(tr));
+
+    ingredientsBody.appendChild(tr);
+  }
+
+  document.getElementById('addIngredientBtn').addEventListener('click', () => {
+    createIngredientRow();
+  });
+
+  // 顶部自定义食材（不指定大类）
+  document.getElementById('addCustomIngredientBtn').addEventListener('click', () => {
+    const name = prompt('请输入自定义食材名称，例如“羊肉”或“南瓜叶”：');
+    if (!name) return;
+    const kcal = parseFloat(prompt('每 100g 大致能量（kcal）：', '150') || '0');
+    const protein = parseFloat(prompt('每 100g 大致蛋白质（g）：', '20') || '0');
+    const fat = parseFloat(prompt('每 100g 大致脂肪（g）：', '10') || '0');
+    const type = prompt('这是肉类还是蔬菜？输入“肉”或“菜”（其他视为肉）：', '肉');
+    const isMeat = (type !== '菜');
+    const group = isMeat ? 'otherOrgan' : 'veg';
+
+    INGREDIENTS_DB[name] = {
+      kcal, protein, fat,
+      taurine_mg: 0,
+      calcium_mg: 0, phosphorus_mg: 0, magnesium_mg: 0,
+      potassium_mg: 0, sodium_mg: 0, chloride_mg: 0,
+      iron_mg: 0, copper_mg: 0, manganese_mg: 0,
+      zinc_mg: 0, selenium_mg: 0, iodine_mg: 0,
+      vitA_IU: 0, vitB_mg: 0, vitE_IU: 0,
+      group, isMeat
+    };
+    INGREDIENT_NAMES.push(name);
+    populateGroupSelects();
+    createIngredientRow(name, 0);
+  });
+
+  // 按类别按钮添加自定义食材
+  function addCustomIngredientToGroup(groupKey) {
+    const groupLabelMap = {
+      white: '白肉',
+      red: '红肉',
+      muscle: '肌肉组织',
+      fish: '鱼类',
+      otherOrgan: '其他内脏',
+      liver: '肝脏',
+      shellfish: '贝类'
+    };
+    const groupLabel = groupLabelMap[groupKey] || groupKey;
+    const name = prompt(`请输入要添加到【${groupLabel}】类别的自定义食材名称：`);
+    if (!name) return;
+    const kcal = parseFloat(prompt('每 100g 大致能量（kcal）：', '150') || '0');
+    const protein = parseFloat(prompt('每 100g 大致蛋白质（g）：', '20') || '0');
+    const fat = parseFloat(prompt('每 100g 大致脂肪（g）：', '10') || '0');
+
+    INGREDIENTS_DB[name] = {
+      kcal, protein, fat,
+      taurine_mg: 0,
+      calcium_mg: 0, phosphorus_mg: 0, magnesium_mg: 0,
+      potassium_mg: 0, sodium_mg: 0, chloride_mg: 0,
+      iron_mg: 0, copper_mg: 0, manganese_mg: 0,
+      zinc_mg: 0, selenium_mg: 0, iodine_mg: 0,
+      vitA_IU: 0, vitB_mg: 0, vitE_IU: 0,
+      group: groupKey, isMeat: true
+    };
+    INGREDIENT_NAMES.push(name);
+    populateGroupSelects();
+  }
+
+  document.querySelectorAll('.small-btn[data-group]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const groupKey = btn.dataset.group;
+      addCustomIngredientToGroup(groupKey);
+    });
+  });
+
+  // 只计算一行的宏量营养
+  function updateRowValues(tr) {
+    const select = tr.querySelector('.ingredient-select');
+    const amountInput = tr.querySelector('.ingredient-amount');
+    const kcalTd = tr.querySelector('.ingredient-kcal');
+    const proteinTd = tr.querySelector('.ingredient-protein');
+    const fatTd = tr.querySelector('.ingredient-fat');
+
+    const name = select.value;
+    const amount = parseFloat(amountInput.value);
+
+    if (!name || !INGREDIENTS_DB[name] || !amount || amount <= 0) {
+      kcalTd.textContent = '0';
+      proteinTd.textContent = '0';
+      fatTd.textContent = '0';
+      return;
+    }
+    const data = INGREDIENTS_DB[name];
+    const factor = amount / 100.0;
+
+    const kcal = data.kcal * factor;
+    const protein = data.protein * factor;
+    const fat = data.fat * factor;
+
+    kcalTd.textContent = formatNumber(kcal, 1);
+    proteinTd.textContent = formatNumber(protein, 1);
+    fatTd.textContent = formatNumber(fat, 1);
+  }
+
+  // 处理重量输入（带有“自动分组”的逻辑）
+  function handleWeightChange(tr) {
+    const amountInput = tr.querySelector('.ingredient-amount');
+    let newAmount = parseFloat(amountInput.value) || 0;
+
+    const autoGroup = tr.dataset.autoGroup === '1';
+    const groupKey = tr.dataset.groupKey;
+    const groupTotal = parseFloat(tr.dataset.groupTotal || '0');
+
+    if (autoGroup && groupKey && groupTotal > 0) {
+      const allRows = Array.from(ingredientsBody.querySelectorAll('tr'))
+        .filter(r => r.dataset.autoGroup === '1' && r.dataset.groupKey === groupKey);
+
+      const others = allRows.filter(r => r !== tr);
+
+      if (others.length > 0) {
+        if (newAmount > groupTotal) {
+          newAmount = groupTotal;
+          amountInput.value = formatNumber(newAmount, 0);
+        }
+        let remaining = groupTotal - newAmount;
+        if (remaining < 0) remaining = 0;
+        const each = remaining / others.length;
+        others.forEach(r => {
+          const inp = r.querySelector('.ingredient-amount');
+          if (inp) {
+            inp.value = formatNumber(each, 0);
+          }
+          updateRowValues(r);
+        });
+      }
+    }
+    updateRowValues(tr);
+    updateTotals();
+  }
+
+  function updateTotals() {
+    let totalWeight = 0;
+    let totalKcal = 0;
+    let totalProtein = 0;
+    let totalFat = 0;
+
+    ingredientsBody.querySelectorAll('tr').forEach(tr => {
+      const amountInput = tr.querySelector('.ingredient-amount');
+      const select = tr.querySelector('.ingredient-select');
+      const name = select.value;
+      const amount = parseFloat(amountInput.value);
+      if (!name || !INGREDIENTS_DB[name] || !amount || amount <= 0) return;
+
+      const data = INGREDIENTS_DB[name];
+      const factor = amount / 100.0;
+
+      totalWeight += amount;
+      totalKcal += data.kcal * factor;
+      totalProtein += data.protein * factor;
+      totalFat += data.fat * factor;
+    });
+
+    totalWeightSpan.textContent = formatNumber(totalWeight, 0);
+    totalKcalSpan.textContent = formatNumber(totalKcal, 1);
+    totalProteinSpan.textContent = formatNumber(totalProtein, 1);
+    totalFatSpan.textContent = formatNumber(totalFat, 1);
+
+    updateFeedingPlan(totalKcal, totalProtein, totalWeight);
+  }
+
+  function updateFeedingPlan(totalKcal, totalProtein, totalWeight) {
+    if (!currentDER || currentDER <= 0 || totalKcal <= 0 || totalWeight <= 0) {
+      feedingPlanText.textContent = '（请先在上方计算 DER，并在配方中添加至少一种食材。）';
+      proteinCompareText.textContent = '（待有 DER 和配方后再计算。）';
+      proteinBadge.textContent = '';
+      return;
+    }
+
+    // 根据年龄/活动给出推荐每日日喂次数
+    let mealsPerDay = 2;
+    const stage = lifeStageSelect.value;
+    if (stage === '2.5') mealsPerDay = 4;        // 幼猫
+    else if (stage === '1.4') mealsPerDay = 3;   // 较活跃成猫
+    else mealsPerDay = 2;                        // 普通成猫/老年
+
+    // 假设每份能量 ≈ DER / mealsPerDay
+    const kcalPerMeal = currentDER / mealsPerDay;
+    let totalMeals = totalKcal / kcalPerMeal;
+    if (totalMeals < 1) totalMeals = 1;
+    const totalMealsRounded = Math.max(1, Math.round(totalMeals));
+    const gramsPerMeal = totalWeight / totalMeals;
+
+    const days = totalMeals / mealsPerDay;
+
+    feedingPlanText.textContent =
+      `推荐分为约 ${totalMealsRounded} 份喂养，每份约 ${formatNumber(gramsPerMeal, 0)} 克，每日 ${mealsPerDay} 份，` +
+      `这批饭大约可吃 ${formatNumber(days, 1)} 天。`;
+
+    // 蛋白质充足度（对幼猫最低需求的倍数）
+    const ratioProtein = totalProtein / currentProteinNeed;
+    proteinCompareText.textContent =
+      `当前配方蛋白质约为该猫每日最低需求的 ${formatNumber(ratioProtein * 100, 0)}%。`;
+    let status;
+    if (ratioProtein >= 1.0 && ratioProtein <= 1.6) status = 'ok';
+    else if (ratioProtein > 1.6) status = 'high';
+    else status = 'low';
+    setBadge(proteinBadge, status);
+  }
+
+  // ===== 按比例自动生成肉类行（支持大类内可自定义重量） =====
+  document.getElementById('autoFillMeatBtn').addEventListener('click', () => {
+    const anchorCat = anchorCategorySelect.value;
+    const anchorWeight = parseFloat(anchorWeightInput.value);
+    if (!anchorCat || !MEAT_RATIOS[anchorCat] || !anchorWeight || anchorWeight <= 0) {
+      alert('请先选择锚定类别，并输入该类别的实际重量。');
+      return;
+    }
+
+    const ratioAnchor = MEAT_RATIOS[anchorCat];
+    const totalMeat = anchorWeight / ratioAnchor;
+
+    // 清空当前表格（如想保留已有蔬菜，可在此逻辑基础上改成只删除 isMeat=true 的行）
+    ingredientsBody.innerHTML = '';
+
+    Object.keys(MEAT_RATIOS).forEach(group => {
+      const selId = groupSelectIds[group];
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+
+      const selectedOptions = Array.from(sel.selectedOptions || []).map(o => o.value);
+      if (selectedOptions.length === 0) return;
+
+      const groupTotalWeight = totalMeat * MEAT_RATIOS[group];
+      const eachWeight = groupTotalWeight / selectedOptions.length;
+
+      selectedOptions.forEach(name => {
+        if (!INGREDIENTS_DB[name]) return;
+        createIngredientRow(name, formatNumber(eachWeight, 0), group, groupTotalWeight);
+      });
+    });
+
+    ingredientsBody.querySelectorAll('tr').forEach(tr => updateRowValues(tr));
+    updateTotals();
+  });
+
+  // ===== 1 kg 配方 & AAFCO 缺口 & 补剂 =====
+  function addDeficitRow(key, actualVal, requiredMin, requiredMax) {
+    const meta = NUTRIENT_META[key];
+    if (!meta) return;
+    const isMg = key.includes('_mg');
+    const isIU = key.includes('_IU');
+    const decimals = isMg ? 1 : (isIU ? 0 : 2);
+
+    const diff = actualVal - requiredMin;
+    let warn = false;
+    if (actualVal < requiredMin) warn = true;
+    if (requiredMax != null && actualVal > requiredMax) warn = true;
+
+    let diffStr;
+    if (diff >= 0) {
+      diffStr = `+${formatNumber(diff, decimals)} ${meta.unit}`;
+    } else {
+      diffStr = `${formatNumber(diff, decimals)} ${meta.unit}`;
+    }
+    if (warn) diffStr += ' ⚠️';
+
+    const maxStr = requiredMax != null
+      ? `${formatNumber(requiredMax, decimals)} ${meta.unit}`
+      : '—';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td>${meta.label}</td>
+       <td>${formatNumber(actualVal, decimals)} ${meta.unit}</td>
+       <td>${formatNumber(requiredMin, decimals)} ${meta.unit}</td>
+       <td>${maxStr}</td>
+       <td style="color:${diff >= 0 ? '#d12a6a' : '#d63031'};">${diffStr}</td>`;
+    aafcoDeficitsBody.appendChild(tr);
+  }
+
+  function renderSupplements(meatWeight) {
+    if (!meatWeight || meatWeight <= 0) {
+      supplementsSummaryDiv.innerHTML = '<p>当前 1 kg 配方中未检测到肉类，无法估算补剂用量。</p>';
+      return;
+    }
+    const isKitten = lifeStageSelect.value === '2.5';
+    const iodineBase = isKitten ? 400 : 700;
+    const iodineTablets = meatWeight / iodineBase;
+    const taurineG = 0.5 * (meatWeight / 1000);
+    const bCaps = 1.5 * (meatWeight / 1000);
+    const calciumG = 0.6 * (meatWeight / 100);
+
+    supplementsSummaryDiv.innerHTML = `
+      <div class="summary-item">
+        1 kg 配方中肉类总重量：<span class="value">${formatNumber(meatWeight, 0)}</span> g
+      </div>
+      <div class="summary-item">
+        Nowfoods 碘化钾（225μg/片）：
+        <span class="value">${formatNumber(iodineTablets, 2)}</span> 片
+        <span class="note">${isKitten ? '（幼猫/孕哺乳：每 400 g 肉 + 1 片）' : '（成猫：每 700 g 肉 + 1 片）'}</span>
+      </div>
+      <div class="summary-item">
+        牛磺酸粉或 Now 牛磺酸胶囊（总量）：
+        <span class="value">${formatNumber(taurineG, 2)}</span> g
+        <span class="note">（按每 1000 g 肉 + 0.5 g 牛磺酸）</span>
+      </div>
+      <div class="summary-item">
+        复合维生素B：
+        <span class="value">${formatNumber(bCaps, 2)}</span> 颗
+        <span class="note">（按每 1000 g 肉 + 1.5 颗）</span>
+      </div>
+      <div class="summary-item">
+        碳酸钙粉：
+        <span class="value">${formatNumber(calciumG, 2)}</span> g
+        <span class="note">（按每 100 g 肉 + 0.6 g 钙粉）</span>
+      </div>
+    `;
+  }
+
+  function calc1kgBatchAndDeficits() {
+    const rows = [];
+    let totalInputWeight = 0;
+
+    ingredientsBody.querySelectorAll('tr').forEach(tr => {
+      const select = tr.querySelector('.ingredient-select');
+      const amountInput = tr.querySelector('.ingredient-amount');
+      const name = select.value;
+      const amount = parseFloat(amountInput.value);
+      if (!name || !INGREDIENTS_DB[name] || !amount || amount <= 0) return;
+      rows.push({ name, amount });
+      totalInputWeight += amount;
+    });
+
+    if (rows.length === 0 || totalInputWeight <= 0) {
+      alert('请先在上方至少输入一种食材及其重量。');
+      return;
+    }
+
+    const scale = 1000.0 / totalInputWeight;
+
+    let totalKcal = 0;
+    let totalProtein = 0;
+    let totalFat = 0;
+    let batchMeatWeight = 0;
+
+    const totalMicro = {};
+    MICRO_KEYS.forEach(k => totalMicro[k] = 0);
+
+    batch1kgIngredientsBody.innerHTML = '';
+
+    rows.forEach(row => {
+      const data = INGREDIENTS_DB[row.name];
+      const scaledWeight = row.amount * scale;
+      const factor = scaledWeight / 100.0;
+
+      totalKcal += data.kcal * factor;
+      totalProtein += data.protein * factor;
+      totalFat += data.fat * factor;
+
+      if (data.isMeat) batchMeatWeight += scaledWeight;
+
+      MICRO_KEYS.forEach(key => {
+        const valPer100 = data[key] || 0;
+        totalMicro[key] += valPer100 * factor;
+      });
+
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        `<td>${row.name}</td>
+         <td>${formatNumber(row.amount, 0)}</td>
+         <td>${formatNumber(scaledWeight, 0)}</td>`;
+      batch1kgIngredientsBody.appendChild(tr);
+    });
+
+    batch1kgKcalSpan.textContent = formatNumber(totalKcal, 1);
+
+    const kcalMultiplier = totalKcal / 1000.0;
+    const proteinNeed1kg = AAFCO_KITTEN_PER_1000KCAL_MIN.protein_g * kcalMultiplier;
+    const fatNeed1kg = AAFCO_KITTEN_PER_1000KCAL_MIN.fat_g * kcalMultiplier;
+
+    batch1kgProteinSpan.textContent = formatNumber(totalProtein, 1);
+    batch1kgFatSpan.textContent = formatNumber(totalFat, 1);
+    batch1kgProteinNeedSpan.textContent = formatNumber(proteinNeed1kg, 1);
+    batch1kgFatNeedSpan.textContent = formatNumber(fatNeed1kg, 1);
+
+    aafcoDeficitsBody.innerHTML = '';
+
+    // 蛋白 & 脂肪
+    addDeficitRow(
+      'protein_g',
+      totalProtein,
+      proteinNeed1kg,
+      AAFCO_KITTEN_PER_1000KCAL_MAX.protein_g ? AAFCO_KITTEN_PER_1000KCAL_MAX.protein_g * kcalMultiplier : null
+    );
+    addDeficitRow(
+      'fat_g',
+      totalFat,
+      fatNeed1kg,
+      AAFCO_KITTEN_PER_1000KCAL_MAX.fat_g ? AAFCO_KITTEN_PER_1000KCAL_MAX.fat_g * kcalMultiplier : null
+    );
+
+    // 牛磺酸
+    const taurineNeed1kg = AAFCO_KITTEN_PER_1000KCAL_MIN.taurine_mg * kcalMultiplier;
+    addDeficitRow(
+      'taurine_mg',
+      totalMicro.taurine_mg,
+      taurineNeed1kg,
+      null
+    );
+
+    // 其他微量元素 & 维生素
+    [
+      'calcium_mg','phosphorus_mg','magnesium_mg',
+      'potassium_mg','sodium_mg','chloride_mg',
+      'iron_mg','copper_mg','manganese_mg','zinc_mg',
+      'selenium_mg','iodine_mg',
+      'vitA_IU','vitE_IU','vitB_mg'
+    ].forEach(key => {
+      const needPer1000 = AAFCO_KITTEN_PER_1000KCAL_MIN[key];
+      if (needPer1000 == null) return;
+      const requiredMin = needPer1000 * kcalMultiplier;
+      const actualVal = totalMicro[key] || 0;
+      const maxPer1000 = AAFCO_KITTEN_PER_1000KCAL_MAX[key];
+      const requiredMax = maxPer1000 != null ? maxPer1000 * kcalMultiplier : null;
+      addDeficitRow(key, actualVal, requiredMin, requiredMax);
+    });
+
+    renderSupplements(batchMeatWeight);
+  }
+
+  document.getElementById('calc1kgBtn').addEventListener('click', calc1kgBatchAndDeficits);
+
+  // ===== 初始化 =====
+  populateGroupSelects();
+  createIngredientRow();
+  createIngredientRow();
+</script>
+</body>
+</html>
